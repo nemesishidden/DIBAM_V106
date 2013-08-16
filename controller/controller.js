@@ -13,19 +13,13 @@ var app = {
 
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
-        document.getElementById('logear').addEventListener('click', this.logear, false);
-        
+        document.getElementById('logear').addEventListener('click', this.logear, false);        
         document.getElementById('scan').addEventListener('click', this.scan, false);
         document.getElementById('guardarLibro').addEventListener('click', this.guardarLibro, false);
-        //document.getElementById('newSolicitud').addEventListener('click', this.cambioPagina, false);
-        //document.getElementById('newSolicitud').addEventListener('click', this.nuevaSolicitud, false);
-        document.getElementById('solicituesPorEnviar').addEventListener('click', this.obtenerSolicitudes, false);
-        
+        document.getElementById('solicituesPorEnviar').addEventListener('click', this.obtenerSolicitudes, false);        
     },
 
     onDeviceReady: function() {
-        //window.pictureSource=navigator.camera.PictureSourceType;
-        //window.destinationType=navigator.camera.DestinationType;
         app.receivedEvent('deviceready');
     },
 
@@ -41,23 +35,7 @@ var app = {
     },
 
     scan: function() {
-        // console.log('scanning');
-        // try {
-        //     window.plugins.barcodeScanner.scan(function(args) {
-        //         console.log("Scanner result: \n" +
-        //             "text: " + args.text + "\n" +
-        //             "format: " + args.format + "\n" +
-        //             "cancelled: " + args.cancelled + "\n");
-        //         app.buscarLibro(args.text);
-        //         $.mobile.changePage( '#newSolicitudPag', { transition: "slide"} );
-        //         console.log(args);
-        //     });
-        // } catch (ex) {
-        //     console.log(ex.message);
-        // }
-        //app.buscarLibro(789568410578);
         var scanner = cordova.require("cordova/plugin/BarcodeScanner");
-
         scanner.scan(
             function (result) {
                 //if(result.format == 'EAN_13'){
@@ -70,7 +48,7 @@ var app = {
                 //     alert('El libro no se encuentra en nuestros registros, por favor agregar manualmente.');
                 // }
                 
-                // $.mobile.changePage( '#newSolicitudPag', { transition: "slide"} );
+                // $.mobile.changePage( '#newSolicitudPag', { transition: "slide"});
             }, 
             function (error) {
                 alert("Error al escanear el Libro: " + error);
@@ -82,36 +60,32 @@ var app = {
         console.log('logear');
         var form = $("#formLogin").serializeArray();
         $.ajax({
-            //url: 'data/usuario.json',
-            //url: 'http://dibam-sel.opensoft.cl/usuario.asp',
             url: 'http://dibam-sel.opensoft.cl/OpenSEL/json/jsonLogin.asp',
             type: 'POST',
-            //dataType: 'json',
-            //data: JSON.stringify($("#formLogin").serializeArray()),
+            dataType: 'json',
             data: {
                 argUsuario: form[0].value,
                 argClave: form[1].value
             },
-            error : function (){ document.title='error'; }, 
+            error : function (){
+                document.title='error';
+            }, 
             success: function (data) {
-                var dat = JSON.parse(data.split('-->')[1]);
-                if(dat.success == 'OK'){
-                    //if(document.getElementById('username').value == data.model.usuario && document.getElementById('pass').value == data.model.pass){
-                        var presupuestos = dat.model.evento;
-                        var pag = '#inicio';
-                        $.mobile.changePage( pag, { transition: "slide"});
-                        window.db = baseDatos.abrirBD();
-                        window.db.transaction(
-                            function(tx) {
-                                // baseDatos.eliminarTablaPresupuesto(tx);
-                                baseDatos.tablaSolicitudesPorEnviar(tx);
-                                baseDatos.tablaPresupuestos(tx);
-                                baseDatos.verificarPresupuesto(tx, presupuestos);
-                                baseDatos.obtenerPresupuesto(tx);
-                            }, baseDatos.errorTablaSolicitudes, baseDatos.successTablaSolicitudes );
-                    // }else{
-                    //     alert('Usted no se encuentra registrado.');
-                    // }       
+                if(data.success){
+                    var presupuestos = data.model.evento;
+                    var pag = '#inicio';
+                    $.mobile.changePage( pag, { transition: "slide"});
+                    window.db = baseDatos.abrirBD();
+                    window.db.transaction(
+                        function(tx) {
+                            // baseDatos.eliminarTablaPresupuesto(tx);
+                            baseDatos.tablaSolicitudesPorEnviar(tx);
+                            baseDatos.tablaPresupuestos(tx);
+                            baseDatos.verificarPresupuesto(tx, presupuestos);
+                            baseDatos.obtenerPresupuesto(tx);
+                        }, baseDatos.errorTablaSolicitudes, baseDatos.successTablaSolicitudes );     
+                }else{
+                    alert('Usted no se encuentra registrado.');
                 }
             }
         });
