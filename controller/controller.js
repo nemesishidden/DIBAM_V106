@@ -22,7 +22,7 @@ var app = {
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
     },
- 
+
     receivedEvent: function(id) {
         // var parentElement = document.getElementById(id);
         // var listeningElement = parentElement.querySelector('.listening');
@@ -38,22 +38,13 @@ var app = {
         var scanner = cordova.require("cordova/plugin/BarcodeScanner");
         scanner.scan(
             function (result) {
-                //if(result.format == 'EAN_13'){
-                    app.buscarLibro(result.text);
-                // }else{
-                //     alert("El codigo escaneado no es un libro, por favor intene nuevamente.")
-                // }
-                
-                // if(!app.buscarLibro(result.text)){
-                //     alert('El libro no se encuentra en nuestros registros, por favor agregar manualmente.');
-                // }
-                
-                // $.mobile.changePage( '#newSolicitudPag', { transition: "slide"});
+                app.buscarLibro(result.text);
             }, 
             function (error) {
                 alert("Error al escanear el Libro: " + error);
             }
         );
+        //app.buscarLibro(9788497321891);
     },
 
     logear: function(){
@@ -121,46 +112,60 @@ var app = {
     },
 
     buscarLibro: function(codigoIsbn){
-        var existe = false;
         $.ajax({
             //url: 'data/libro.json',
-            url: 'http://dibam-sel.opensoft.cl/libro.asp',
+            //url: 'http://dibam-sel.opensoft.cl/libro.asp',
+            url: 'http://dibam-sel.opensoft.cl/OpenSEL/json/jsonLibro.asp',
             type: 'POST',
             dataType: 'json',
+            data: {
+               argISBN: codigoIsbn
+            },
             error : function (){ document.title='error'; }, 
             success: function (data) {
                 if(data.success){
-                    data.model.forEach(function(a){
-                        if(a.isbn == codigoIsbn){
-                            existe = true;
-                            document.getElementById("isbn").value = a.isbn;
-                            document.getElementById("titulo").value = a.titulo;
-                            document.getElementById("autor").value = a.autor;
-                            document.getElementById("precioReferencia").value = a.precioReferencia;
-                        }
-                    });
+                    var a = data.model;
+                    document.getElementById("isbn").value = a.isbn;
+                    document.getElementById("titulo").value = a.titulo;
+                    document.getElementById("autor").value = a.autor;
+                }else{
+                    alert(data.model.error+'\nPor favor ingreselo manualmente.');
+                    document.getElementById("isbn").value = codigoIsbn;
                 }
             }
         });
-        if(!existe){
-            document.getElementById("isbn").value=codigoIsbn;
-            alert("El libro no se encuentra en nuestros registros, por favor ingreselo manuelmente.");
-        }
         $.mobile.changePage( '#newSolicitudPag', { transition: "slide"} );
     },
 
     guardarLibro: function(){
         console.log('guardarLibro');
-        var libro = {
-            isbn: document.getElementById("isbn").value,
-            nombre_libro: document.getElementById("titulo").value,
-            valor_referencia: document.getElementById("precioReferencia").value,
-            cantidad: document.getElementById("cantidad").value,
-            imagen: 'sin imagen'
-        };
-        window.db.transaction(function(tx) {
-            baseDatos.verificarLibro(tx,libro);
-        }, baseDatos.errorGuardarLibro, baseDatos.successGuardarLibro);
+        var guardar = false;
+        if(document.getElementById("isbn").value.trim().length <= 0){
+            alert('Debe completar el campo ISBN.');
+        }else if(document.getElementById("titulo").value.trim().length <= 0){
+            alert('Debe completar el campo Titulo.');
+        }else if(document.getElementById("autor").value.trim().length <= 0){
+            alert('Debe completar el campo Autor.');
+        }else if(parseInt(document.getElementById("precioReferencia").value) <= 0){
+            alert('Debe completar el campo Valor.');
+        }else if(parseInt(document.getElementById("cantidad").value) <= 0){
+            alert('Debe completar el campo Cantidad.');
+        }else{
+            guardar = true;
+        }
+        if(guardar){
+            var libro = {
+                isbn: document.getElementById("isbn").value,
+                nombre_libro: document.getElementById("titulo").value,
+                valor_referencia: document.getElementById("precioReferencia").value,
+                cantidad: document.getElementById("cantidad").value,
+                imagen: 'sin imagen'
+            };
+            window.db.transaction(function(tx) {
+                baseDatos.verificarLibro(tx,libro);
+            }, baseDatos.errorGuardarLibro, baseDatos.successGuardarLibro);
+        }
+        
         // var pag = '#inicio';
         // $.mobile.changePage( pag, { transition: "slide"} );
     },
