@@ -26,7 +26,9 @@
                         <label for="basic">Contraseña:</label><br />
                         <!-- <input type="password" name="pass" id="pass" value="" placeholder="Contraseña"/> -->
                         <input type="password" name="argClave" id="pass" value="" placeholder="Contraseña"/>
-                        <center><input type="button" value="INGRESAR" id="logear" data-inline="true"/></center>
+                        <!-- <center><input type="button" value="INGRESAR" id="logear" data-inline="true"/></center> -->
+                        <center><button id="logear" data-inline="true"/>INGRESAR</button></center>
+                        >
                     </form>
                     <center><img src="style/img/logo_dibam.jpg"></center>    
                 </div>
@@ -99,13 +101,13 @@
                         <label for="basic">Autor:</label>
                         <input type="text" name="autor" id="autor" value="" placeholder="Autor"/><br />
                         
-                        <label for="basic">Valor:</label>
-                        <input type="text" name="precioReferencia" id="precioReferencia" value="" placeholder="Valor"/><br />
+                        <label for="basic">Precio Referencia:</label>
+                        <input type="text" name="precioReferencia" id="precioReferencia" value="" placeholder="Precio Referencia"/><br />
                         
                         <label for="slider-mini">Cantidad de Libros:</label>
                         <input type="range" name="slider-mini" id="cantidad" value="0" min="0" max="200" data-highlight="true" data-mini="true" /><br />
                                            
-                        <label for="basic" style="float:right;">Total: <span id="totalPresupuesto">0</span></label><br /><br />
+                        <label for="basic" style="float:right;">Total: <span id="totalPresupuesto"></span></label><br /><br />
                                                 
                         <div data-role="navbar" data-iconpos="top">
                             <ul>
@@ -122,7 +124,7 @@
                         <ul>
                             <li><a href="#inicio" data-rel="back" data-icon="back">Volver</a></li>
                             <li><a href="#inicio" data-icon="home">Home</a></li>
-                            <!--<li><a href="#" data-icon="gear">Contacto</a></li>-->
+                            <li><a href="#" data-icon="gear">Contacto</a></li>
                         </ul>
                     </div>
                 </div>
@@ -226,8 +228,8 @@
             <p id="mensajeError"><p>
         </div>
 
-        <!--<script src="lib/cordova.js"></script>-->
-        <script src="cordova.js"></script>
+        <!--<script src="lib/cordova.js"></script> -->
+        <script src="cordova.js"></script> 
         <script src="barcodescanner.js"></script>
         <!--<script type="text/javascript" src="childbrowser.js"></script>-->
         <script type="text/javascript" src="controller/controller.js"></script>
