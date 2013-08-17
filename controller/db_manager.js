@@ -15,7 +15,7 @@ var baseDatos = {
         console.log('tabla presupuesto creada');
     },
 
-    //inserts 
+    //inserts
 	agregarSolicitud: function(tx, libro){
 		var valor_referencia = libro.valor_referencia.replace('.','').replace(',','');
         window.montoUtilizado = window.montoUtilizado + (valor_referencia*1);
@@ -27,7 +27,8 @@ var baseDatos = {
 
     agregarPresupuesto: function(tx, presupuesto){
     	console.log(presupuesto);
-        var fecha = new Date(presupuesto.fechaValidoHasta).toLocaleDateString();
+        // var fecha = new Date(presupuesto.fechaValidoHasta).toLocaleDateString();
+        var fecha = new Date(presupuesto.fechaValidoHasta).toString();
         tx.executeSql('insert into Presupuestos (id, nombre, total, disponible, utilizado, fechaValido) VALUES ('+presupuesto.id+',"'+presupuesto.nombrePresupuesto+'",'+presupuesto.totalPresupuesto+','+presupuesto.disponiblePresupuesto+','+presupuesto.utilizado+',"'+fecha+'")');
         document.getElementById('presupuestoValidoHasta').innerHTML = fecha;
         document.getElementById('presupuestoDisponible').innerHTML = presupuesto.disponiblePresupuesto;
@@ -141,7 +142,7 @@ var baseDatos = {
     },
     successGuardarLibro: function(tx){
     	console.log('Libro Creado Exitosamente');
-        $.mobile.changePage( '#inicio', { transition: "slide"} );
+        $.mobile.changePage( '#inicio',{transition: "slide"});
     },
 
     //Errores de transaccion
