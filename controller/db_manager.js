@@ -15,7 +15,7 @@ var baseDatos = {
         console.log('tabla presupuesto creada');
     },
 
-    //inserts
+    //inserts 
 	agregarSolicitud: function(tx, libro){
 		var valor_referencia = libro.valor_referencia.replace('.','').replace(',','');
         window.montoUtilizado = window.montoUtilizado + (valor_referencia*1);
