@@ -31,9 +31,6 @@
                     <center><img src="style/img/logo_dibam.jpg"></center>    
                 </div>
                 
-<!--                 <div data-role="footer" data-position="fixed">
-                    <h4>Page Footer</h4>
-                </div> -->
             </div>
 
             <div data-role="page" id="inicio">
@@ -43,9 +40,9 @@
                 </div>
                 <div data-role="content" style="padding: 0px;">
                     <div class="divResumen">
-                    <p class="resumen">Presupuesto Valido Hasta: <span id="presupuestoValidoHasta"></span> <br />
+                    <!-- <p class="resumen">Evento Valido Hasta: <span id="presupuestoValidoHasta"></span> <br />
                         Disponible: <span id="presupuestoDisponible"></span> / Utilizado: <span id="presupuestoUtilizado"></span>
-                    </p>
+                    </p> -->
                 </div> 
                     <ul data-role="listview" style="margin:0px;" >
                         <li>
@@ -53,19 +50,15 @@
                                 <img src="style/img/icons/nuevaSolicitud.png" alt="Nueva Solicitud">
                                 <p class="ui-li-desc-menu">Nueva Solicitud</p>
                             </a>
-                            <!--<ul data-role="listview" data-inset="true" >
-                                <li><a href="" id="scan"><p class="ui-li-desc-menu">Escanerar Libro</p></a></li>
-                                <li><a href="" id="newSolicitud"><p class="ui-li-desc-menu">Ingresar Manualmente</p></a></li>
-                            </ul>-->
                         </li>
                         <li>
-                            <a href="" id="solicituesPorEnviar">
+                            <a href="" id="solicitudesPorEnviar">
                                 <img src="style/img/icons/solPorEnviar.png">
                                 <p class="ui-li-desc-menu">Solicitud por enviar</p>
                             </a>
                         </li>
                         <li>
-                            <a href="#page4">
+                            <a href="" id="solicitudesEnviadas">
                                 <img src="style/img/icons/solEnviadas.png">
                                 <p class="ui-li-desc-menu">Solicitudes enviadas</p>
                             </a>
@@ -75,7 +68,7 @@
                 <div data-role="footer" data-position="fixed"  data-theme="a">
                     <div data-role="navbar" data-iconpos="top">
                         <ul>
-                            <li><a href="#login" data-rel="back" data-icon="back">Salir</a></li>
+                            <li><a href="#login" data-icon="back">Salir</a></li>
                             <li><a href="#inicio" data-icon="home">Home</a></li>
                             <!--<li><a href="#" data-icon="gear">Contacto</a></li>-->
                         </ul>
@@ -122,24 +115,23 @@
                         <ul>
                             <li><a href="#inicio" data-rel="back" data-icon="back">Volver</a></li>
                             <li><a href="#inicio" data-icon="home">Home</a></li>
-                            <li><a href="#" data-icon="gear">Contacto</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
 
 
-            <div data-role="page" id="solicituesPorEnviarPag">
+            <div data-role="page" id="solicitudesPorEnviarPag">
                 <div data-role="header" data-position="fixed">
                     <img src="style/img/barra_superior.jpg" width="100%">
                     <h1>Solicitud por enviar</h1>
                 </div>
                 <div data-role="content" style="padding: 0px;">   
                     <div class="divResumen">
-                        <p class="resumen">
-                            Presupuesto Valido Hasta: <span id="presupuestoValidoHastaDos"></span> <br />
+                        <!-- <p class="resumen">
+                            Evento Valido Hasta: <span id="presupuestoValidoHastaDos"></span> <br />
                             Disponible: <span id="presupuestoDisponibleDos"></span> / Utilizado: <span id="presupuestoUtilizadoDos"></span>
-                        </p>
+                        </p> -->
                     </div>      
                     <form action="" method="get" lang="es" id="formListaSolPorEnviar">
                         <!-- <fieldset id="listadoSolicitudesPorEnviar" data-role="controlgroup"></fieldset> -->
@@ -153,23 +145,22 @@
                         <ul>
                             <li><a href="#inicio" data-rel="back" data-icon="back">Volver</a></li>
                             <li><a href="#inicio" data-icon="home">Home</a></li>
-                            <li><a href="#" data-icon="gear">Contacto</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
 
-            <div data-role="page" id="page4">
+            <div data-role="page" id="solicitudesEnviadasPag">
                 <div data-role="header" data-position="fixed">
                     <img src="style/img/barra_superior.jpg" width="100%">
                     <h1>Solicitudes enviadas</h1>
                 </div>
                 <div data-role="content"> 
                     <p>Seleccione: </p>  
-                    <ul data-role="listview" data-inset="true">
-                        <li><a href="#detalleSolicitud">Evento Uno</a></li>
+                    <ul id="listSolEnviadas" data-role="listview" data-inset="true">
+<!--                         <li><a href="#detalleSolicitud">Evento Uno</a></li>
                         <li><a href="">Evento Dos</a></li>
-                        <li><a href="">Evento Tres</a></li>
+                        <li><a href="">Evento Tres</a></li> -->
                     </ul>
                 </div>
                 <div data-role="footer" data-position="fixed" class="ui-bar-a-footer">
@@ -177,7 +168,6 @@
                         <ul>
                             <li><a href="#inicio" data-rel="back" data-icon="back">Volver</a></li>
                             <li><a href="#inicio" data-icon="home">Home</a></li>
-                            <li><a href="#" data-icon="gear">Contacto</a></li>
                         </ul>
                     </div>
                 </div>
@@ -190,23 +180,23 @@
                 </div>
                 <div data-role="content">   
                     <div class="divResumen">
-                        <p class="resumen">Presupuesto Valido Hasta: <span id="presupuestoValidoHasta"></span> <br />
+                        <!-- <p class="resumen">Evento Valido Hasta: <span id="presupuestoValidoHasta"></span> <br />
                             Disponible: <span id="presupuestoDisponible"></span> / Utilizado: <span id="presupuestoUtilizado"></span>
-                        </p>
+                        </p> -->
                     </div>
                     <div>
                         <center><table id="tablaSolPorEnviar">
                             <tr>
-                                <td><span class="clsEnunciado">Evento</span></td><td>:</td><td><span class="clsResultado">ss</span></td>
+                                <td><span class="clsEnunciado">Evento</span></td><td>:</td><td><span id="evNomEvento" class="clsResultado"></span></td>
                             </tr>
                             <tr>
-                                <td><span class="clsEnunciado">Monto total</span></td><td>:</td><td><span class="clsResultado">ss</span></td>
+                                <td><span class="clsEnunciado">Monto total</span></td><td>:</td><td><span id="evMontoTotal" class="clsResultado"></span></td>
                             </tr>
                             <tr>
-                                <td><span class="clsEnunciado">Fecha env&iacute;o</span></td><td>:</td><td><span class="clsResultado">ss</span></td>
+                                <td><span class="clsEnunciado">Fecha env&iacute;o</span></td><td>:</td><td><span id="evFecha" class="clsResultado"></span></td>
                             </tr>
                             <tr>
-                                <td><span class="clsEnunciado">Estado</span></td><td>:</td><td><span class="clsResultado">ss</span></td>
+                                <td><span class="clsEnunciado">Utilizado</span></td><td>:</td><td><span id="evUtilizado"class="clsResultado"></span></td>
                             </tr>
 
                         </table></center>
@@ -218,7 +208,6 @@
                         <ul>
                             <li><a href="#inicio" data-rel="back" data-icon="back">Volver</a></li>
                             <li><a href="#inicio" data-icon="home">Home</a></li>
-                            <li><a href="#" data-icon="gear">Contacto</a></li>
                         </ul>
                     </div>
                 </div>
@@ -228,9 +217,9 @@
             <p id="mensajeError"><p>
         </div>
 
-        <!--<script src="lib/cordova.js"></script> -->
-        <script src="cordova.js"></script> 
-        <script src="barcodescanner.js"></script>
+        <script src="lib/cordova.js"></script> 
+        <!-- <script src="cordova.js"></script> 
+        <script src="barcodescanner.js"></script> -->
         <!--<script type="text/javascript" src="childbrowser.js"></script>-->
         <script type="text/javascript" src="controller/controller.js"></script>
         <script type="text/javascript" src="controller/db_manager.js"></script>

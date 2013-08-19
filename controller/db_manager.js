@@ -30,9 +30,9 @@ var baseDatos = {
         // var fecha = new Date(presupuesto.fechaValidoHasta).toLocaleDateString();
         var fecha = new Date(presupuesto.fechaValidoHasta).toString();
         tx.executeSql('insert into Presupuestos (id, nombre, total, disponible, utilizado, fechaValido) VALUES ('+presupuesto.id+',"'+presupuesto.nombrePresupuesto+'",'+presupuesto.totalPresupuesto+','+presupuesto.disponiblePresupuesto+','+presupuesto.utilizado+',"'+fecha+'")');
-        document.getElementById('presupuestoValidoHasta').innerHTML = fecha;
-        document.getElementById('presupuestoDisponible').innerHTML = presupuesto.disponiblePresupuesto;
-        document.getElementById('presupuestoUtilizado').innerHTML = presupuesto.utilizado;
+        // document.getElementById('presupuestoValidoHasta').innerHTML = fecha;
+        // document.getElementById('presupuestoDisponible').innerHTML = presupuesto.disponiblePresupuesto;
+        // document.getElementById('presupuestoUtilizado').innerHTML = presupuesto.utilizado;
     },
 
     //Updates
@@ -62,9 +62,9 @@ var baseDatos = {
     			console.log('ya existe');
                 for (var i=0; i<len; i++){
                     var r = results.rows.item(i);
-                    document.getElementById('presupuestoValidoHasta').innerHTML = r.fechaValido
-                    document.getElementById('presupuestoDisponible').innerHTML = r.disponible
-                    document.getElementById('presupuestoUtilizado').innerHTML = r.utilizado;
+                    // document.getElementById('presupuestoValidoHasta').innerHTML = r.fechaValido
+                    // document.getElementById('presupuestoDisponible').innerHTML = r.disponible
+                    // document.getElementById('presupuestoUtilizado').innerHTML = r.utilizado;
                 }
                 
     			//alert('el libro ya se encuentra agregado');
@@ -138,13 +138,13 @@ var baseDatos = {
 		    for (var i=0; i<len; i++){
 		        var r = results.rows.item(i);
 		        //document.getElementById("total_presupuesto").innerHTML = r.disponible- window.montoUtilizado;		
-                document.getElementById('presupuestoValidoHasta').innerHTML = r.fechaValido
-                document.getElementById('presupuestoDisponible').innerHTML = r.disponible
-                document.getElementById('presupuestoUtilizado').innerHTML = r.utilizado;
+                // document.getElementById('presupuestoValidoHasta').innerHTML = r.fechaValido
+                // document.getElementById('presupuestoDisponible').innerHTML = r.disponible
+                // document.getElementById('presupuestoUtilizado').innerHTML = r.utilizado;
 
-                document.getElementById('presupuestoValidoHastaDos').innerHTML = r.fechaValido
-                document.getElementById('presupuestoDisponibleDos').innerHTML = r.disponible
-                document.getElementById('presupuestoUtilizadoDos').innerHTML = r.utilizado;
+                // document.getElementById('presupuestoValidoHastaDos').innerHTML = r.fechaValido
+                // document.getElementById('presupuestoDisponibleDos').innerHTML = r.disponible
+                // document.getElementById('presupuestoUtilizadoDos').innerHTML = r.utilizado;
 		       
 		    }
 		}else{
