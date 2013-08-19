@@ -90,22 +90,37 @@ var baseDatos = {
     //Resultados
     successSolicitudesPorEnviar: function(tx, results){
     	var len = results.rows.length;
+        var ulLista,sobrante,largoCadena, valorDeReferencia;
+
+        ulLista = document.getElementById('listadoSolicitudesPorEnviar'); 
         console.log("Tabla SolicitiudesPorEnviar: " + len + " filas encontradas.");
         if(len >= 1){
-            //$('#listadoSolicitudesPorEnviar').remove();
 		    for (var i=0; i<len; i++){
 		    	var r = results.rows.item(i);
 		    	window.montoUtilizado =window.montoUtilizado+(r.valor_referencia*r.cantidad);
-		        var largoCadena = r.valor_referencia.toString().length;
-		        var sobrante = largoCadena-3;
-		        var valorDeReferencia = r.valor_referencia.toString().substring(0,sobrante)+'.'+r.valor_referencia.toString().substring(largoCadena-3,largoCadena);
-                if($('#checkbox-'+r.isbn).length < 1){
-                    var chk = '<input type="checkbox" name="checkbox-'+r.isbn+'" id="checkbox-'+r.isbn+'" class="custom"/> <label for="checkbox-'+r.isbn+'"><p class="label-sol">'+r.nombre_libro+'</p><p class="label-precio">Precio: $'+valorDeReferencia+'</p><p class="label-cantidad">Cantidad: '+r.cantidad +'</p></label>';
-                    // var chk = '<input type="checkbox" name="checkbox-'+r.isbn+'" id="checkbox-'+r.isbn+'" class="custom"/> <label for="checkbox-'+r.isbn+'"><p class="label-sol"><img src="style/img/icons/solEnviadas.png" style="float:left;">'+r.nombre_libro+'<br/>Precio: $'+valorDeReferencia+'<br>Cantidad: '+r.cantidad +'<br /></p></label>';
-                    $('#listadoSolicitudesPorEnviar').append(chk); 
+		        largoCadena = r.valor_referencia.toString().length;
+                if(largoCadena > 3){
+                    sobrante = largoCadena-3;
+                    valorDeReferencia = r.valor_referencia.toString().substring(0,sobrante)+'.'+r.valor_referencia.toString().substring(largoCadena-3,largoCadena);
+                }else{
+                    valorDeReferencia = r.valor_referencia.toString();
                 }
+		        //sobrante = largoCadena-3;
+		        //valorDeReferencia = r.valor_referencia.toString().substring(0,sobrante)+'.'+r.valor_referencia.toString().substring(largoCadena-3,largoCadena);
 
+                if($('#checkbox-'+r.isbn).length < 1){
+                    var $elemento = $('<li></li>');
+                    var chk = '<input type="checkbox" name="checkbox-'+r.isbn+'" id="checkbox-'+r.isbn+'" class="custom"/> <label for="checkbox-'+r.isbn+'"><p class="label-sol">'+r.nombre_libro+'</p><p class="label-precio">Precio: $'+valorDeReferencia+'</p><p class="label-cantidad">Cantidad: '+r.cantidad +'</p></label>';
+                    $elemento.html(chk);
+                    // var chk = '<input type="checkbox" name="checkbox-'+r.isbn+'" id="checkbox-'+r.isbn+'" class="custom"/> <label for="checkbox-'+r.isbn+'"><p class="label-sol"><img src="style/img/icons/solEnviadas.png" style="float:left;">'+r.nombre_libro+'<br/>Precio: $'+valorDeReferencia+'<br>Cantidad: '+r.cantidad +'<br /></p></label>';
+                    ulLista.appendChild($elemento[0]);
+                }
 		    }
+            if ($('#listadoSolicitudesPorEnviar').hasClass('ui-listview')) {
+                $('#listadoSolicitudesPorEnviar').listview('refresh');
+            } else {
+                $('#listadoSolicitudesPorEnviar').trigger('create');
+            }
 		}else{
 			document.getElementById("sinResultadoSolicitud").innerHTML = 'Usted no tiene solicitudes por enviar.';			
 			console.log('no tiene solicitudes por enviar');

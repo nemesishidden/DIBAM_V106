@@ -38,13 +38,15 @@ var app = {
         var scanner = cordova.require("cordova/plugin/BarcodeScanner");
         scanner.scan(
             function (result) {
+                $('#formLibroNuevo')[0].reset()
                 app.buscarLibro(result.text);
             }, 
             function (error) {
                 alert("Error al escanear el Libro: " + error);
             }
         );
-        //app.buscarLibro(9788497321891);
+        // $('#formLibroNuevo')[0].reset()
+        // app.buscarLibro(9788497321891);
     },
 
     logear: function(){

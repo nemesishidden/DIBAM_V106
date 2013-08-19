@@ -26,9 +26,7 @@
                         <label for="basic">Contraseña:</label><br />
                         <!-- <input type="password" name="pass" id="pass" value="" placeholder="Contraseña"/> -->
                         <input type="password" name="argClave" id="pass" value="" placeholder="Contraseña"/>
-                        <!-- <center><input type="button" value="INGRESAR" id="logear" data-inline="true"/></center> -->
-                        <center><button id="logear" data-inline="true"/>INGRESAR</button></center>
-                        >
+                        <center><input type="button" value="INGRESAR" id="logear" data-inline="true"/></center>
                     </form>
                     <center><img src="style/img/logo_dibam.jpg"></center>    
                 </div>
@@ -91,7 +89,7 @@
                     <h1>Nueva Solicitud</h1>
                 </div>
                 <div data-role="content">   
-                    <form action="" method="get" lang="es">
+                    <form action="" method="get" lang="es" id="formLibroNuevo">
                         <label for="basic">ISBN:</label>
                         <input type="text" name="isbn" id="isbn" value="" placeholder="ISBN"/><br />
                         
@@ -143,8 +141,10 @@
                             Disponible: <span id="presupuestoDisponibleDos"></span> / Utilizado: <span id="presupuestoUtilizadoDos"></span>
                         </p>
                     </div>      
-                    <form action="" method="get" lang="es">
-                        <fieldset id="listadoSolicitudesPorEnviar" data-role="controlgroup"></fieldset>
+                    <form action="" method="get" lang="es" id="formListaSolPorEnviar">
+                        <!-- <fieldset id="listadoSolicitudesPorEnviar" data-role="controlgroup"></fieldset> -->
+                        <ul id="listadoSolicitudesPorEnviar" data-role="controlgroup"></ul>
+                        <!-- <div id="lista"></div> -->
                         <span id="sinResultadoSolicitud"></span>
                     </form>
                 </div>
