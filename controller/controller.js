@@ -181,34 +181,31 @@ var app = {
     // },
 
     buscarLibro: function(codigoIsbn){
-        if(codigoIsbn.toString().length >= 1)){
-            $.ajax({
-                //url: 'data/libro.json',
-                //url: 'http://dibam-sel.opensoft.cl/libro.asp',
-                url: 'http://dibam-sel.opensoft.cl/OpenSEL/json/jsonLibro.asp',
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                   argISBN: codigoIsbn
-                },
-                error : function (){ document.title='error'; }, 
-                success: function (data) {
-                    if(isbn.toString().length != 0){
-                        if(data.success){
-                            var a = data.model;
-                            document.getElementById("isbn").value = a.isbn;
-                            document.getElementById("titulo").value = a.titulo;
-                            document.getElementById("autor").value = a.autor;
-                        }else{
-                            alert(data.model.error+'\nPor favor ingreselo manualmente.');
-                            document.getElementById("isbn").value = codigoIsbn;
-                        }
-                        $.mobile.changePage( '#newSolicitudPag', { transition: "slide"} );
-                    }                
-                }
-            });
-        }
-        
+        $.ajax({
+            //url: 'data/libro.json',
+            //url: 'http://dibam-sel.opensoft.cl/libro.asp',
+            url: 'http://dibam-sel.opensoft.cl/OpenSEL/json/jsonLibro.asp',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+               argISBN: codigoIsbn
+            },
+            error : function (){ document.title='error'; }, 
+            success: function (data) {
+                if(isbn.toString().length != 0){
+                    if(data.success){
+                        var a = data.model;
+                        document.getElementById("isbn").value = a.isbn;
+                        document.getElementById("titulo").value = a.titulo;
+                        document.getElementById("autor").value = a.autor;
+                    }else{
+                        alert(data.model.error+'\nPor favor ingreselo manualmente.');
+                        document.getElementById("isbn").value = codigoIsbn;
+                    }
+                    $.mobile.changePage( '#newSolicitudPag', { transition: "slide"} );
+                }                
+            }
+        });
         // $.mobile.changePage( '#newSolicitudPag', { transition: "slide"} );
     },
 
