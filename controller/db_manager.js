@@ -11,7 +11,8 @@ var baseDatos = {
         console.log('tabla Solicitudes_por_enviar creada');
     },
     tablaPresupuestos:function(tx){
-        tx.executeSql('create table if not exists Presupuestos (id unique, nombre, total, disponible, utilizado,fechaValido)');
+        //tx.executeSql('create table if not exists Presupuestos (id unique, nombre, total, disponible, utilizado,fechaValido)');
+        tx.executeSql('create table if not exists Presupuestos (id unique, nombrePresupuesto, totalPresupuesto, disponiblePresupuesto, utilizado,fechaValidoHasta)');
         console.log('tabla presupuesto creada');
     },
 
@@ -19,17 +20,20 @@ var baseDatos = {
 	agregarSolicitud: function(tx, libro){
 		var valor_referencia = libro.valor_referencia.replace('.','').replace(',','');
         window.montoUtilizado = window.montoUtilizado + (valor_referencia*1);
-        var idPresupuesto = 1;
+        // var idPresupuesto = 1;
+        var idPresupuesto = window.usuario.evento.id;
         console.log('Valor: '+(valor_referencia*1)*libro.cantidad);
+        var utilizado = (valor_referencia*1)*libro.cantidad;
         tx.executeSql('insert into Solicitudes_por_enviar (isbn, nombre_libro, valor_referencia, cantidad, imagen) values ('+libro.isbn+', "'+libro.nombre_libro+'", '+valor_referencia+', '+libro.cantidad+', "'+libro.imagen+'")');
-        tx.executeSql('update Presupuestos set utilizado =(select utilizado from Presupuestos where id='+idPresupuesto+')+'+(valor_referencia*1)*libro.cantidad+' WHERE id = '+idPresupuesto);
+        tx.executeSql('update Presupuestos set utilizado = (select utilizado from Presupuestos where id='+idPresupuesto+')+'+utilizado+', disponiblePresupuesto = (select disponiblePresupuesto from Presupuestos where id='+idPresupuesto+')-'+utilizado+' WHERE id = '+idPresupuesto);
+        baseDatos.obtenerPresupuestoId(tx, idPresupuesto);
     },
 
     agregarPresupuesto: function(tx, presupuesto){
     	console.log(presupuesto);
         // var fecha = new Date(presupuesto.fechaValidoHasta).toLocaleDateString();
-        var fecha = new Date(presupuesto.fechaValidoHasta).toString();
-        tx.executeSql('insert into Presupuestos (id, nombre, total, disponible, utilizado, fechaValido) VALUES ('+presupuesto.id+',"'+presupuesto.nombrePresupuesto+'",'+presupuesto.totalPresupuesto+','+presupuesto.disponiblePresupuesto+','+presupuesto.utilizado+',"'+fecha+'")');
+        //var fecha = new Date(presupuesto.fechaValidoHasta).toString();
+        tx.executeSql('insert into Presupuestos (id, nombrePresupuesto, totalPresupuesto, disponiblePresupuesto, utilizado,fechaValidoHasta) VALUES ('+presupuesto.id+',"'+presupuesto.nombrePresupuesto+'",'+presupuesto.totalPresupuesto+','+presupuesto.disponiblePresupuesto+','+presupuesto.utilizado+',"'+presupuesto.fechaValidoHasta+'")');
         // document.getElementById('presupuestoValidoHasta').innerHTML = fecha;
         // document.getElementById('presupuestoDisponible').innerHTML = presupuesto.disponiblePresupuesto;
         // document.getElementById('presupuestoUtilizado').innerHTML = presupuesto.utilizado;
@@ -46,6 +50,8 @@ var baseDatos = {
     		if(results.rows.length == 0){
     			console.log('agregado');   			
     			baseDatos.agregarSolicitud(tx, libro);
+                //app.construirResumen(r);
+
     		}else{
     			alert('el libro ya se encuentra agregado');
     		}
@@ -57,11 +63,13 @@ var baseDatos = {
     		if(results.rows.length == 0){
     			console.log('agregado');   			
     			baseDatos.agregarPresupuesto(tx, presupuesto);
+                app.construirResumen(presupuesto);
     		}else{
                 var len = results.rows.length;
     			console.log('ya existe');
                 for (var i=0; i<len; i++){
                     var r = results.rows.item(i);
+                    app.construirResumen(r);
                     // document.getElementById('presupuestoValidoHasta').innerHTML = r.fechaValido
                     // document.getElementById('presupuestoDisponible').innerHTML = r.disponible
                     // document.getElementById('presupuestoUtilizado').innerHTML = r.utilizado;
@@ -76,6 +84,10 @@ var baseDatos = {
     	tx.executeSql('select * from Presupuestos', [], baseDatos.successPresupuestos, app.errorCB);
     },
 
+    obtenerPresupuestoId: function(tx, idEvento){
+        tx.executeSql('select * from Presupuestos where id='+idEvento, [], baseDatos.successPresupuestos, app.errorCB);
+    },
+
     obtenerSolicitudesPorEnviar: function(tx) {
         tx.executeSql('select * from Solicitudes_por_enviar', [], baseDatos.successSolicitudesPorEnviar, app.errorCB);
     },
@@ -85,6 +97,9 @@ var baseDatos = {
     },
     eliminarTablaPresupuesto: function(tx){
         tx.executeSql('drop table Presupuestos',[],baseDatos.successPresupuestos, baseDatos.errorTablaSolicitudes);
+    },
+    eliminarTablaSolicitudesPorEnviar: function(tx){
+        tx.executeSql('drop table Solicitudes_por_enviar',[],baseDatos.succesDeleteSolicitudes, baseDatos.errorTablaSolicitudes);
     },
 
     //Resultados
@@ -98,13 +113,15 @@ var baseDatos = {
 		    for (var i=0; i<len; i++){
 		    	var r = results.rows.item(i);
 		    	window.montoUtilizado =window.montoUtilizado+(r.valor_referencia*r.cantidad);
-		        largoCadena = r.valor_referencia.toString().length;
-                if(largoCadena > 3){
-                    sobrante = largoCadena-3;
-                    valorDeReferencia = r.valor_referencia.toString().substring(0,sobrante)+'.'+r.valor_referencia.toString().substring(largoCadena-3,largoCadena);
-                }else{
-                    valorDeReferencia = r.valor_referencia.toString();
-                }
+                window.montoUtilizado = app.formatValores(window.montoUtilizado);
+		        // largoCadena = r.valor_referencia.toString().length;
+          //       if(largoCadena > 3){
+          //           sobrante = largoCadena-3;
+          //           valorDeReferencia = r.valor_referencia.toString().substring(0,sobrante)+'.'+r.valor_referencia.toString().substring(largoCadena-3,largoCadena);
+          //       }else{
+          //           valorDeReferencia = r.valor_referencia.toString();
+          //       }
+                valorDeReferencia = app.formatValores(r.valor_referencia);
 		        //sobrante = largoCadena-3;
 		        //valorDeReferencia = r.valor_referencia.toString().substring(0,sobrante)+'.'+r.valor_referencia.toString().substring(largoCadena-3,largoCadena);
 
@@ -128,7 +145,14 @@ var baseDatos = {
     },
 
     succesUpdateDisponible: function(tx){
-        console.log('tabla solicitudes creada');
+        console.log('tabla presupuesto actualizada creada');
+    },
+
+    succesDeletePresupuesto: function(tx){
+        console.log('tabla presupuesto eliminada');
+    },
+    succesDeleteSolicitudes: function(tx){
+        console.log('tabla solicitudes eliminada');
     },
 
     successPresupuestos: function(tx, results){
@@ -137,6 +161,7 @@ var baseDatos = {
         if(len >= 1){
 		    for (var i=0; i<len; i++){
 		        var r = results.rows.item(i);
+                app.construirResumen(r);
 		        //document.getElementById("total_presupuesto").innerHTML = r.disponible- window.montoUtilizado;		
                 // document.getElementById('presupuestoValidoHasta').innerHTML = r.fechaValido
                 // document.getElementById('presupuestoDisponible').innerHTML = r.disponible
@@ -155,8 +180,9 @@ var baseDatos = {
     successTablaSolicitudes: function(){
     	console.log('tabla solicitudes creada');
     },
-    successGuardarLibro: function(tx){
+    successGuardarLibro: function(){
     	console.log('Libro Creado Exitosamente');
+        //app.construirResumen(idEvento);
         $.mobile.changePage( '#inicio',{transition: "slide"});
     },
 

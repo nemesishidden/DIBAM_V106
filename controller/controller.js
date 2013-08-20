@@ -41,19 +41,26 @@ var app = {
         var scanner = cordova.require("cordova/plugin/BarcodeScanner");
         scanner.scan(
             function (result) {
-                $('#formLibroNuevo')[0].reset()
-                app.buscarLibro(result.text);
+                $('#formLibroNuevo')[0].reset();
+                if(result.text.toString().trim().length >=1){
+                    app.buscarLibro(result.text);
+                }else{
+                    $.mobile.changePage( '#newSolicitudPag', { transition: "slide"} );
+                }
+                
             }, 
             function (error) {
                 alert("Error al escanear el Libro: " + error);
             }
         );
-        // $('#formLibroNuevo')[0].reset()
+        // $('#formLibroNuevo')[0].reset();
         // app.buscarLibro(9788497321891);
     },
 
     logear: function(){
         console.log('logear');
+        //$('.divResumen').find('p').remove();
+
         var form = $("#formLogin").serializeArray();
         $.ajax({
             url: 'http://dibam-sel.opensoft.cl/OpenSEL/json/jsonLogin.asp',
@@ -76,30 +83,43 @@ var app = {
                     window.db.transaction(
                         function(tx) {
                             // baseDatos.eliminarTablaPresupuesto(tx);
+                            // baseDatos.eliminarTablaSolicitudesPorEnviar(tx);
                             baseDatos.tablaSolicitudesPorEnviar(tx);
                             baseDatos.tablaPresupuestos(tx);
                             baseDatos.verificarPresupuesto(tx, presupuestos);
                             baseDatos.obtenerPresupuesto(tx);
                         }, baseDatos.errorTablaSolicitudes, baseDatos.successTablaSolicitudes );
-                    //var elements = document.getElementsByClassName("divResumen");
-                    //var elements = $('.divResumen');
-                    var $children = $('<p class="resumen"></p>');
-                    $children.html('Evento Valido Hasta: '+presupuestos.fechaValidoHasta.toString()+' <br />Disponible: '+presupuestos.disponiblePresupuesto+' / Utilizado: '+presupuestos.utilizado+' ');
-                    //elements[i].innerHTML = $children;
-                    $('.divResumen').append($children);
-                    // for (var i = 0; i < elements.length; i++) {
-                    //     //usuario.evento.disponiblePresupuesto
-                    //     var $children = $('<p class="resumen"></p>');
-                    //         $children.html('Evento Valido Hasta:'+presupuestos.fechaValidoHasta.toString()+' <br />Disponible: '+presupuestos.disponiblePresupuesto+' / Utilizado:'+presupuestos.utilizado+' ');
-                    //     elements[i].innerHTML = $children;
-                    //     $('.divResumen').append($children);
-                    // }
+
+                        app.construirResumen(presupuestos);
+                        // $('p').remove('.resumen');
+                        // var $children = $('<p class="resumen"></p>');
+                        // $children.html('Evento Valido Hasta: '+presupuestos.fechaValidoHasta.toString()+' <br />Disponible: '+app.formatValores(presupuestos.disponiblePresupuesto)+' / Utilizado: '+app.formatValores(presupuestos.utilizado)+' ');
+                        // $('.divResumen').append($children);
 
                 }else{
                     alert('Usted no se encuentra registrado.');
                 }
             }
         });
+    },
+
+    formatValores: function(valor){
+        var valorFormateado = '';
+        var numero = valor.toString().replace(/\./g,'');
+        while(numero.length > 3){
+            valorFormateado = '.' + numero.substring(numero.length - 3) + valorFormateado;
+            numero = numero.substring(0, numero.length - 3);
+        }
+        valorFormateado = numero + valorFormateado;
+        return valorFormateado;
+    },
+
+    construirResumen: function(p){
+        $('p').remove('.resumen');
+        var $children = $('<p class="resumen"></p>');
+        $children.html('<b>'+p.nombrePresupuesto+'</b><br />Evento Valido Hasta: '+p.fechaValidoHasta.toString()+' <br />Disponible: '+app.formatValores(p.disponiblePresupuesto)+' / Utilizado: '+app.formatValores(p.utilizado)+' ');
+        //elements[i].innerHTML = $children;
+        $('.divResumen').append($children);
     },
 
     // nuevaSolicitud: function(){
@@ -144,7 +164,7 @@ var app = {
                     //$('#listSolEnviadas').listview('refresh');
                     $.mobile.changePage( pag, { transition: "slide"} );    
                 }else{
-                    alert('error');
+                    alert(data.error);
                 }
             }
         });
@@ -152,14 +172,21 @@ var app = {
         //$.mobile.changePage( pag, { transition: "slide"} );
     },
 
+    actualizaTotal: function(cantidad){
+        var valor = $('#precioReferencia').val();
+        var total = parseInt(valor)*parseInt(cantidad.value);
+        total = app.formatValores(total);
+        $('#totalPresupuesto').text(total);
+    },
+
     irEvento: function(eId){
         console.log(eId);
         window.eventos.forEach(function(e){
             if(eId == e.EventoId){
                 document.getElementById('evNomEvento').innerHTML = e.Nombre;
-                document.getElementById('evMontoTotal').innerHTML = e.totalPresupuesto;
+                document.getElementById('evMontoTotal').innerHTML = app.formatValores(e.totalPresupuesto);
                 document.getElementById('evFecha').innerHTML = e.FechaEnvioSolicitud.toString();
-                document.getElementById('evUtilizado').innerHTML = e.PresupuestoUtilizado; 
+                document.getElementById('evUtilizado').innerHTML = app.formatValores(e.PresupuestoUtilizado); 
             }
             console.log(e);
         });
@@ -210,7 +237,7 @@ var app = {
     },
 
     guardarLibro: function(){
-        console.log('guardarLibro');
+        console.log('guardarLibro idEvento: '+window.usuario.evento.id);
         var guardar = false;
         if(document.getElementById("isbn").value.trim().length <= 0){
             alert('Debe completar el campo ISBN.');

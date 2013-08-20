@@ -92,11 +92,11 @@
                         <label for="basic">Autor:</label>
                         <input type="text" name="autor" id="autor" value="" placeholder="Autor"/><br />
                         
-                        <label for="basic">Precio Referencia:</label>
-                        <input type="text" name="precioReferencia" id="precioReferencia" value="" placeholder="Precio Referencia"/><br />
+                        <label for="basic">Valor:</label>
+                        <input type="number" name="precioReferencia" id="precioReferencia" value="" placeholder="Valor"/><br />
                         
                         <label for="slider-mini">Cantidad de Libros:</label>
-                        <input type="range" name="slider-mini" id="cantidad" value="0" min="0" max="200" data-highlight="true" data-mini="true" /><br />
+                        <input type="range" name="slider-mini" id="cantidad" value="0" min="0" max="200" onchange="app.actualizaTotal(this)" data-highlight="true" data-mini="true" /><br />
                                            
                         <label for="basic" style="float:right;">Total: <span id="totalPresupuesto"></span></label><br /><br />
                                                 
@@ -225,6 +225,7 @@
         <script type="text/javascript" src="controller/db_manager.js"></script>
         <script type="text/javascript">
             app.initialize();
+            
         </script>
     </body>
 </html>
