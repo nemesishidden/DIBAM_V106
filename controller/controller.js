@@ -6,6 +6,7 @@ var destinationType;
 var montoUtilizado = 0;
 var db;
 var usuario;
+var encontrados;
 var eventos;
 var app = {
 
@@ -20,6 +21,7 @@ var app = {
         document.getElementById('guardarLibro').addEventListener('click', this.guardarLibro, false);
         document.getElementById('solicitudesPorEnviar').addEventListener('click', this.obtenerSolicitudes, false);
         document.getElementById('solicitudesEnviadas').addEventListener('click', this.obtenerSolicitudesEnviadas, false);       
+        document.getElementById('enviarSolicitud').addEventListener('click', this.enviarSolicitud, false);
     },
 
     onDeviceReady: function() {
@@ -38,23 +40,24 @@ var app = {
     },
 
     scan: function() {
-        var scanner = cordova.require("cordova/plugin/BarcodeScanner");
-        scanner.scan(
-            function (result) {
-                $('#formLibroNuevo')[0].reset();
-                if(result.text.toString().trim().length >=1){
-                    app.buscarLibro(result.text);
-                }else{
-                    $.mobile.changePage( '#newSolicitudPag', { transition: "slide"} );
-                }
-                
-            }, 
-            function (error) {
-                alert("Error al escanear el Libro: " + error);
-            }
-        );
-        // $('#formLibroNuevo')[0].reset();
-        // app.buscarLibro(9788497321891);
+        // var scanner = cordova.require("cordova/plugin/BarcodeScanner");
+        // scanner.scan(
+        //     function (result) {
+        //         document.getElementById("precioReferencia").innerHTML = 0;
+        //         $('#formLibroNuevo')[0].reset();
+        //         if(result.text.toString().trim().length >=1){
+        //             app.buscarLibro(result.text);
+        //         }else{
+        //             $.mobile.changePage( '#newSolicitudPag', { transition: "slide"} );
+        //         }                
+        //     }, 
+        //     function (error) {
+        //         alert("Error al escanear el Libro: " + error);
+        //     }
+        // );
+        document.getElementById("precioReferencia").innerHTML = 0;
+        $('#formLibroNuevo')[0].reset();
+        app.buscarLibro(9789568410575);
     },
 
     logear: function(){
@@ -67,7 +70,7 @@ var app = {
             type: 'POST',
             dataType: 'json',
             data: {
-                argUsuario: form[0].value,
+                argUsuario: form[0].value.toLowerCase(),
                 argClave: form[1].value
             },
             error : function (){
@@ -86,11 +89,11 @@ var app = {
                             // baseDatos.eliminarTablaSolicitudesPorEnviar(tx);
                             baseDatos.tablaSolicitudesPorEnviar(tx);
                             baseDatos.tablaPresupuestos(tx);
-                            baseDatos.verificarPresupuesto(tx, presupuestos);
-                            baseDatos.obtenerPresupuesto(tx);
+                            baseDatos.verificarPresupuesto(tx, presupuestos, window.usuario.id);
+                            baseDatos.obtenerPresupuestoId(tx, window.usuario);
                         }, baseDatos.errorTablaSolicitudes, baseDatos.successTablaSolicitudes );
 
-                        app.construirResumen(presupuestos);
+                        //app.construirResumen(presupuestos);
                         // $('p').remove('.resumen');
                         // var $children = $('<p class="resumen"></p>');
                         // $children.html('Evento Valido Hasta: '+presupuestos.fechaValidoHasta.toString()+' <br />Disponible: '+app.formatValores(presupuestos.disponiblePresupuesto)+' / Utilizado: '+app.formatValores(presupuestos.utilizado)+' ');
@@ -128,11 +131,12 @@ var app = {
 
     obtenerSolicitudes: function(){
         var pag = '#'+this.id+'Pag';
+        var idEvento = window.usuario.evento.id;
         window.db.transaction(function(tx) {
-            baseDatos.obtenerSolicitudesPorEnviar(tx);
-            baseDatos.obtenerPresupuesto(tx);
+            baseDatos.obtenerSolicitudesPorEnviar(tx, window.usuario);
+            baseDatos.obtenerPresupuestoId(tx, window.usuario);
         }, baseDatos.errorTablaSolicitudes, function(tx){
-            $.mobile.changePage( pag, { transition: "slide"} );
+            //$.mobile.changePage( pag, { transition: "slide"} );
         } );
     },
 
@@ -164,7 +168,7 @@ var app = {
                     //$('#listSolEnviadas').listview('refresh');
                     $.mobile.changePage( pag, { transition: "slide"} );    
                 }else{
-                    alert(data.error);
+                    alert(data.model.error);
                 }
             }
         });
@@ -173,7 +177,8 @@ var app = {
     },
 
     actualizaTotal: function(cantidad){
-        var valor = $('#precioReferencia').val();
+        //var valor = $('#precioReferencia').val();
+        var valor = document.getElementById("precioReferencia").value;
         var total = parseInt(valor)*parseInt(cantidad.value);
         total = app.formatValores(total);
         $('#totalPresupuesto').text(total);
@@ -206,6 +211,9 @@ var app = {
     //     //     $('#listadoSolicitudesPorEnviar').append(str);
     //     // });
     // },
+    librosEncontrados: function(encontrados){
+        console.log(encontrados);
+    },
 
     buscarLibro: function(codigoIsbn){
         $.ajax({
@@ -258,16 +266,88 @@ var app = {
                 nombre_libro: document.getElementById("titulo").value,
                 valor_referencia: document.getElementById("precioReferencia").value,
                 cantidad: document.getElementById("cantidad").value,
-                imagen: 'sin imagen'
+                autor: document.getElementById("autor").value
             };
             window.db.transaction(function(tx) {
-                baseDatos.verificarLibro(tx,libro);
+                baseDatos.verificarLibro(tx,libro, window.usuario);
             }, baseDatos.errorGuardarLibro, baseDatos.successGuardarLibro);
         }
         
         // var pag = '#inicio';
         // $.mobile.changePage( pag, { transition: "slide"} );
+    },
+
+    enviarSolicitud: function(){
+        var largoArray = $('#listadoSolicitudesPorEnviar').find('li').find('input:checked').length;
+        var libros = new Array(largoArray);
+        var i = 0;
+        $('#listadoSolicitudesPorEnviar').find('li').find('input:checked').each(function(e, b){
+            var libro = {
+                codigoISBN: b.id.split('-')[1],
+                Titulo: '',
+                Autor: '',
+                Cantidad: '',
+                Precio: ''
+            };
+            libros[i] = libro;
+            i++;
+        });
+        console.log('enviarSolicitud ');
+        console.log(libros);
+        window.db.transaction(function(tx){
+           baseDatos.obtenerLibroSolicitudesPorEnviar(tx, libros, window.usuario);
+        }, baseDatos.errorBuscarLibroEnvio, function(){
+            window.encontrados.forEach(function(x){
+                libros.forEach(function(z){
+                    if(parseInt(z.codigoISBN) == x.isbn){
+                        console.log(z);
+                        z.Autor = x.autor;
+                        z.Titulo = x.nombre_libro;
+                        z.Cantidad = x.cantidad;
+                        z.Precio = x.valor_referencia;
+                    }
+                });
+            });
+            app.enviarDibam(libros);
+        });
+    },
+
+    enviarDibam: function(sol){
+        var solicitud = {
+            model: {
+                eventoId: window.usuario.evento.id,
+                usuarioId: window.usuario.id,
+                libros: sol
+            }
+        };
+        // $.ajax({
+        //     url: 'http://dibam-sel.opensoft.cl/OpenSEL/json/jsonRecibeSolicitud.asp',
+        //     type: 'POST',
+        //     dataType: 'json',
+        //     data: {
+        //        argSolicitudJSON: solicitud
+        //     },
+        //     error : function (){ document.title='error'; }, 
+        //     success: function (data) {                
+        //         if(data.success){
+        //             $.mobile.changePage( '#inicio', {transition: "slide"});
+        //         }else{
+        //             alert(data.model.error+'.');
+        //             $.mobile.changePage( '#inicio', {transition: "slide"});
+        //         }
+        //     }                
+            
+        // });
+        window.db.transaction(function(tx) {
+            baseDatos.borrarLibro(tx, window.usuario);
+        }, baseDatos.errorTablaSolicitudes, function(tx){
+            alert('Su solicitud ha sido enviada con exito.');
+            $.mobile.changePage( '#inicio', {transition: "slide"});
+        } );
+        
+
     }
+
 
     // queryDB: function(tx) {
     //     tx.executeSql('SELECT * FROM Presupuestos', [], app.querySuccessPresupuestos, app.errorCB);
